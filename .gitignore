@@ -3,6 +3,7 @@
 Thumbs.db
 .vscode/
 .idea/
+.vs/
 *.swp
 *.swo
 
@@ -17,6 +18,7 @@ credentials/
 
 # C / C++ / CMake / Pico SDK
 build/
+build-host/
 cmake-build-*/
 CMakeFiles/
 CMakeCache.txt
@@ -30,9 +32,14 @@ Makefile
 *.bin
 *.hex
 *.dis
+*.exe
+
+# Local snapshots / scratch work
+backups/
+backup/
+scratch/
 
 # Visual Studio / .NET
-.vs/
 [Bb]in/
 [Oo]bj/
 *.user
@@ -54,7 +61,7 @@ packages/
 *.bak
 *.cache
 
-# CAD / generated exports
-# Keep source CAD files, but do not commit local/generated exports by default.
+# Generated CAD / exports
+# Source CAD files belong in cad/. Generated exports should not be committed by default.
 exports/
 generated/
