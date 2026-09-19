@@ -1,0 +1,60 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# C / C++ / CMake / Pico SDK
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.elf
+*.map
+*.uf2
+*.bin
+*.hex
+*.dis
+
+# Visual Studio / .NET
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+artifacts/
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Logs / temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# CAD / generated exports
+# Keep source CAD files, but do not commit local/generated exports by default.
+exports/
+generated/
