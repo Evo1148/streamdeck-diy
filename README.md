@@ -5,125 +5,170 @@
 <h1 align="center">DIY Stream Deck</h1>
 
 <p align="center">
-  A custom macro pad / Stream Deck built from scratch around the RP2040:
-  electronics, USB HID firmware, Windows configuration software and a 3D-printed enclosure.
+  A custom RP2040 macro pad / Stream Deck built from scratch:
+  electronics, firmware, USB protocol, Windows software and a 3D-printed enclosure.
 </p>
 
 <p align="center">
-  <strong>12 mechanical keys · rotary encoder · 480×320 display · USB HID · Windows app · custom enclosure</strong>
+  <strong>12 mechanical keys · rotary encoder · 480×320 TFT · touch · USB HID · WinUI app</strong>
 </p>
 
 ---
 
 ## Overview
 
-This project started as a simple DIY macro pad and grew into a complete hardware/software system.
+This project started as a simple DIY macro pad and evolved into a complete hardware/software system.
 
-The goal is to build a device that is genuinely useful on a daily desktop setup while also serving as a hands-on project for embedded development, USB protocols, desktop software, electronics and mechanical design.
+The device is built around a **Waveshare RP2040-Zero** and combines a 4×3 mechanical key matrix, rotary encoder, 480×320 TFT, XPT2046 touch controller, persistent on-device configuration and a Windows application that communicates with the device over a custom Vendor HID protocol.
 
-The device is built around an **RP2040-Zero** and combines a 4×3 mechanical key matrix, a rotary encoder, a 480×320 TFT display and a custom USB HID protocol used by a Windows configuration application.
-
-> **Project status:** active development. The physical prototype, key matrix, encoder, USB HID communication and Windows configuration workflow are functional. This public repository is currently being prepared for the full source and CAD import.
+> **Status:** active development. The firmware and Windows application source are now public. The physical prototype, matrix, encoder, USB HID stack, persistent bindings, display pipeline and Windows configuration workflow are functional. The enclosure/CAD is still being iterated before publication.
 
 ## Highlights
 
-- **12 mechanical keys** arranged as a 4×3 matrix.
-- **Rotary encoder** with push button.
-- **480×320 TFT display** for a richer on-device interface.
-- **USB HID keyboard** support.
-- **Consumer Control HID** for multimedia actions.
-- **Custom Vendor HID protocol** for configuration and host communication.
-- **Persistent bindings** stored on-device.
-- **Windows configuration application** built with .NET / WinUI.
-- **Custom 3D-printed enclosure** with interchangeable stand angles.
-- Designed as one integrated project: hardware, firmware, software and mechanical design evolve together.
+- **12 mechanical keys** in a 4×3 matrix.
+- **Rotary encoder** with configurable clockwise, counter-clockwise and push actions.
+- **480×320 TFT** with ST7796 backend.
+- **XPT2046 touch** support.
+- Standard **USB HID Keyboard** and **Consumer Control**.
+- Custom **Vendor HID** protocol with fixed 64-byte reports.
+- Transactional configuration updates and persistent A/B flash records with CRC32.
+- **DisplayLink** synchronization path between desktop software and firmware.
+- **Windows configuration application** built with C# / .NET / WinUI.
+- Profiles, host actions, automation, system stats and display editing.
+- Firmware and desktop-side automated tests.
+
+## Source
+
+- 🧠 [RP2040 firmware](./firmware/)
+- 🪟 [Windows application](./software/)
+- 🔌 [Protocol documentation](./docs/protocol.md)
+- 🧩 [Architecture](./docs/architecture.md)
+- ⚡ [Hardware / GPIO map](./docs/hardware.md)
 
 ## System architecture
 
 ```text
-┌──────────────────────┐
-│   Windows App        │
-│   C# / WinUI         │
-└──────────┬───────────┘
-           │ Vendor HID
-           │ 64-byte reports
-┌──────────▼───────────┐
-│     RP2040-Zero      │
-│                     │
-│  USB HID Firmware   │
-│  Binding storage    │
-│  Input processing   │
-└───┬────────┬────────┘
-    │        │
-    │        └──────────────► 480×320 TFT
-    │
-    ├───────────────────────► Rotary encoder
-    │
-    └───────────────────────► 4×3 key matrix
+┌──────────────────────────┐
+│ Windows App              │
+│ C# / .NET / WinUI        │
+│                          │
+│ Profiles · Host Actions  │
+│ Display · Automation     │
+└────────────┬─────────────┘
+             │ Vendor HID / DisplayLink
+             │ 64-byte reports
+┌────────────▼─────────────┐
+│ RP2040-Zero              │
+│                          │
+│ USB HID                  │
+│ Config + flash storage   │
+│ Input + display runtime  │
+└────┬────────┬────────┬───┘
+     │        │        │
+     │        │        └────► TFT 480×320 + touch
+     │        └─────────────► Rotary encoder
+     └──────────────────────► 4×3 key matrix
 ```
-
-More detail is available in [docs/architecture.md](./docs/architecture.md).
-
-## USB protocol
-
-The firmware exposes standard HID functionality for keyboard/media actions plus a **Vendor HID** interface for configuration.
-
-The current protocol uses fixed **64-byte reports** and includes operations for:
-
-- device information;
-- setting a binding;
-- reading a binding;
-- reporting binding information;
-- testing an action;
-- ACK / NACK responses.
-
-See [docs/protocol.md](./docs/protocol.md).
 
 ## Hardware
 
-The current prototype is based on:
-
 | Component | Role |
 | --- | --- |
-| RP2040-Zero | Main microcontroller |
+| Waveshare RP2040-Zero | Main microcontroller |
 | 12× MX-compatible switches | 4×3 key matrix |
 | 1N4148 diodes | Matrix isolation |
-| Rotary encoder | Navigation / configurable input |
-| 480×320 TFT | Device display |
+| Rotary encoder | Configurable input / navigation |
+| ST7796 480×320 TFT | Device display |
+| XPT2046 | Touch controller |
 | Perfboard | Prototype electronics |
 | 3D-printed enclosure | Mechanical assembly |
 
-Hardware notes are collected in [docs/hardware.md](./docs/hardware.md).
+The current GPIO mapping has been cross-checked against the firmware source and is documented in [docs/hardware.md](./docs/hardware.md).
+
+## USB protocol
+
+The device exposes normal HID keyboard/media functionality plus a dedicated Vendor HID interface.
+
+Current protocol features include:
+
+- device information;
+- read/write bindings;
+- action testing;
+- transactional configuration updates;
+- bootloader entry;
+- asynchronous host-action events;
+- DisplayLink commands, responses and events;
+- ACK / NACK error handling.
+
+See [docs/protocol.md](./docs/protocol.md) and the implementation under [firmware/src/protocol](./firmware/src/protocol/) and [software/StreamDeckDIY.Protocol](./software/StreamDeckDIY.Protocol/).
 
 ## Software stack
 
 | Layer | Technologies |
 | --- | --- |
-| Firmware | C/C++ · Pico SDK · TinyUSB |
+| Firmware | C/C++ · Pico SDK 2.3.1 · TinyUSB |
 | USB | HID Keyboard · Consumer Control · Vendor HID |
-| Desktop app | C# · .NET · WinUI |
+| Display / touch | ST7796 · XPT2046 · DisplayLink |
+| Desktop app | C# · .NET 10 · WinUI · Windows App SDK |
 | Transport | HidSharp |
-| Mechanical design | Parametric CAD / 3D printing |
-| Version control | Git · GitHub / Forgejo |
+| Hardware telemetry | LibreHardwareMonitor |
+| Mechanical design | CAD · FDM 3D printing |
+| Version control | Git · GitHub · Forgejo |
 
 ## Repository layout
 
-The repository is being prepared around this structure:
-
 ```text
 streamdeck-diy/
-├── firmware/        # RP2040 firmware
-├── software/        # Windows configuration application
-├── hardware/        # Wiring and electronics documentation
-├── cad/             # Enclosure and stand designs
-├── docs/            # Architecture and protocol documentation
-├── assets/          # Images, screenshots and media
+├── firmware/        # RP2040 source, diagnostics and tests
+├── software/        # Windows app, protocol, transport and tests
+├── docs/            # Architecture, hardware and protocol docs
+├── assets/          # Public project media
+├── tools/           # Repository/import tooling
 ├── .gitignore
+├── .gitattributes
 ├── README.md
 └── README.es.md
 ```
 
-The source folders will be populated as the current development tree is cleaned and imported.
+## Building
+
+### Firmware
+
+Requirements:
+
+- Raspberry Pi Pico SDK **2.3.1**
+- CMake
+- ARM toolchain compatible with the Pico SDK
+- board target: `waveshare_rp2040_zero`
+
+From the repository root:
+
+```bash
+cmake -S firmware -B firmware/build
+cmake --build firmware/build
+```
+
+The main output is `StreamDeck_Firmware.uf2`. The CMake project also contains matrix-only and encoder-only diagnostic firmware targets.
+
+### Windows application
+
+Requirements:
+
+- Windows
+- .NET **10 SDK**
+- x64
+- Windows App SDK dependencies restored through NuGet
+
+```powershell
+dotnet restore .\software\StreamDeckDIY.sln
+dotnet build .\software\StreamDeckDIY.sln -c Debug -p:Platform=x64
+```
+
+The desktop-side test project can be run with:
+
+```powershell
+dotnet run --project .\software\StreamDeckDIY.Protocol.Tests\StreamDeckDIY.Protocol.Tests.csproj
+```
 
 ## Current state
 
@@ -131,40 +176,31 @@ The source folders will be populated as the current development tree is cleaned 
 | --- | --- |
 | 4×3 key matrix | ✅ Working |
 | Rotary encoder + push | ✅ Working |
-| USB keyboard HID | ✅ Working |
+| USB Keyboard HID | ✅ Working |
 | Consumer Control HID | ✅ Working |
 | Vendor HID transport | ✅ Working |
-| Persistent bindings | ✅ Implemented |
+| Persistent configuration | ✅ Implemented |
 | Windows configuration app | ✅ Functional |
 | 480×320 display pipeline | ✅ Functional |
-| Final enclosure | 🚧 Iterating |
-| Public source import | 🚧 In progress |
-| Build guide | ⏳ Planned |
+| Touch support | ✅ Implemented |
+| Firmware / desktop tests | ✅ Included |
+| Public firmware source | ✅ Published |
+| Public Windows app source | ✅ Published |
+| Final enclosure / CAD | 🚧 Iterating |
+| Assembly guide | ⏳ Planned |
 
-## Goals
+## Development principles
 
-The project is intentionally more than a button box. The long-term goal is a compact, polished device with:
-
-- reliable daily-use firmware;
-- configurable actions without reflashing;
-- a useful on-device display;
-- reproducible hardware;
-- a clean Windows configuration experience;
-- an enclosure that can actually be printed, assembled and serviced.
-
-## Development philosophy
-
-A few principles guide the project:
-
-- keep firmware behavior explicit and testable;
-- avoid coupling device functionality to one desktop app;
-- treat the USB protocol as a stable interface;
-- make hardware and enclosure decisions around real assembly constraints;
-- document failures and revisions instead of hiding them.
+- Keep firmware behavior explicit and testable.
+- Treat the USB protocol as a stable interface between independently evolving components.
+- Keep important device behavior available without requiring the desktop application to remain open.
+- Design electronics and enclosure around real assembly and servicing constraints.
+- Preserve regression tests as features evolve.
+- Document failures and revisions instead of hiding them.
 
 ## License
 
-A license has not been selected yet. Until one is added, the repository remains under the default copyright rules.
+A license has not been selected yet. Until one is added, the repository remains under default copyright rules.
 
 ---
 
