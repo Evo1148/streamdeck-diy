@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StreamDeckDIY.Protocol\StreamDeckDIY.Protocol.csproj" />
+    <ProjectReference Include="..\StreamDeckDIY.Core\StreamDeckDIY.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\StreamDeckDIY.App\Services\WindowsAudioOutputService.cs"
+             Link="App\WindowsAudioOutputService.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\IProfileInteraction.cs"
+             Link="App\IProfileInteraction.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\IDeviceFirmwareInteraction.cs"
+             Link="App\IDeviceFirmwareInteraction.cs" />
+    <Compile Include="..\StreamDeckDIY.App\ViewModels\AsyncRelayCommand.cs"
+             Link="App\AsyncRelayCommand.cs" />
+    <Compile Include="..\StreamDeckDIY.App\ViewModels\ObservableObject.cs"
+             Link="App\ObservableObject.cs" />
+    <Compile Include="..\StreamDeckDIY.App\ViewModels\ProfileViewModel.cs"
+             Link="App\ProfileViewModel.cs" />
+    <Compile Include="..\StreamDeckDIY.App\ViewModels\DeviceFirmwareUpdateViewModel.cs"
+             Link="App\DeviceFirmwareUpdateViewModel.cs" />
+    <Compile Include="..\StreamDeckDIY.App\ViewModels\BindingPresentation.cs"
+             Link="App\BindingPresentation.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\BindingIconStore.cs"
+             Link="App\BindingIconStore.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\BindingLabelStore.cs"
+             Link="App\BindingLabelStore.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\WindowsSystemStatsProvider.cs"
+             Link="App\WindowsSystemStatsProvider.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\ArtworkRgb565Converter.cs"
+             Link="App\ArtworkRgb565Converter.cs" />
+    <Compile Include="..\StreamDeckDIY.App\Services\CompanionAssetProcessor.cs"
+             Link="App\CompanionAssetProcessor.cs" />
+  </ItemGroup>
+</Project>
+
+

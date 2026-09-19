@@ -1,0 +1,12 @@
+#include "display/display_assets.hpp"
+#include <cstring>
+namespace streamdeck::display {
+Error AssetPool::begin(uint16_t t,uint16_t a,AssetFormat f,uint16_t w,uint16_t h,uint32_t total,uint32_t crc){if(t==0||a==0||f!=AssetFormat::Rgb565Raw)return Error::UnsupportedFormat;if(total==0||total>MAX_SINGLE_ASSET_BYTES)return Error::AssetTooLarge;transfer_=t;asset_=a;format_=f;width_=w;height_=h;expected_=total;received_=0;crc_=crc;receiving_=true;return Error::None;}
+Error AssetPool::chunk(uint16_t t,uint32_t off,const uint8_t*d,std::size_t n){if(!receiving_||t!=transfer_)return Error::TransferNotFound;if(!d||off!=received_||off+n>expected_)return Error::OutOfBounds;std::memcpy(incoming_.data()+off,d,n);received_+=uint32_t(n);return Error::None;}
+Error AssetPool::commit(uint16_t t){if(!receiving_||t!=transfer_)return Error::TransferNotFound;if(received_!=expected_||crc32(incoming_.data(),received_)!=crc_){receiving_=false;return Error::CrcMismatch;}Asset*slot=nullptr;for(auto&a:assets_)if(a.used&&a.id==asset_){slot=&a;break;}if(!slot)for(auto&a:assets_)if(!a.used){slot=&a;break;}if(!slot){receiving_=false;return Error::AssetPoolFull;}const std::size_t old=slot->used?slot->size:0;if(used_-old+expected_>ASSET_POOL_BYTES){receiving_=false;return Error::AssetPoolFull;}compact(asset_);for(auto&a:assets_)if(!a.used){slot=&a;break;}std::memcpy(pool_.data()+used_,incoming_.data(),expected_);*slot={asset_,format_,width_,height_,uint32_t(used_),expected_,crc_,true};used_+=expected_;last_committed_id_=asset_;receiving_=false;return Error::None;}
+const Asset* AssetPool::find(uint16_t id)const{for(const auto&a:assets_)if(a.used&&a.id==id)return &a;return nullptr;}
+const uint8_t* AssetPool::data(const Asset&a)const{return a.used&&a.offset+a.size<=pool_.size()?pool_.data()+a.offset:nullptr;}
+Error AssetPool::release(uint16_t id){for(const auto&a:assets_)if(a.used&&a.id==id){compact(id);return Error::None;}return Error::TransferNotFound;}
+void AssetPool::compact(uint16_t excluded){std::size_t next=0;for(auto&a:assets_){if(!a.used)continue;if(a.id==excluded){a={};continue;}if(a.offset!=next)std::memmove(pool_.data()+next,pool_.data()+a.offset,a.size);a.offset=uint32_t(next);next+=a.size;}used_=next;}
+uint32_t AssetPool::crc32(const uint8_t*d,std::size_t n)const{uint32_t c=0xFFFFFFFFu;for(std::size_t i=0;i<n;i++){c^=d[i];for(int b=0;b<8;b++)c=(c>>1)^(0xEDB88320u&uint32_t(0-int(c&1)));}return c^0xFFFFFFFFu;}
+}

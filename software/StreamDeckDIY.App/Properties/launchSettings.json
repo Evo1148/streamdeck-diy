@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "StreamDeckDIY.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "StreamDeckDIY.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

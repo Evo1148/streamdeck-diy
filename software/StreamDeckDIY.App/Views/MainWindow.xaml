@@ -1,0 +1,998 @@
+<Window
+    x:Class="StreamDeckDIY.App.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="StreamDeck DIY">
+    <Grid x:Name="AppRoot" MinWidth="1180" MinHeight="650"
+          Background="{StaticResource AppBackgroundBrush}"
+          Loaded="OnLoaded">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="208" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+            <Border Grid.ColumnSpan="2" Background="{StaticResource PanelBrush}"
+                    BorderBrush="{StaticResource SubtleBorderBrush}" BorderThickness="0,0,0,1">
+                <Grid Padding="24,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <Border Width="30" Height="30" CornerRadius="6" Background="{StaticResource AppAccentBrush}">
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontWeight="Bold" Text="SD" />
+                        </Border>
+                        <TextBlock Style="{StaticResource AppTitleTextStyle}" VerticalAlignment="Center"
+                                   Text="StreamDeck DIY" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="0,0,24,0" Orientation="Horizontal"
+                                Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Perfil activo" />
+                        <TextBlock FontWeight="SemiBold"
+                                   Text="{x:Bind ViewModel.ActiveProfileName, Mode=OneWay}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+                                VerticalAlignment="Center">
+                        <TextBlock Foreground="{StaticResource SuccessBrush}" Text="●"
+                                   Visibility="{x:Bind ViewModel.ConnectedIndicatorVisibility, Mode=OneWay}" />
+                        <TextBlock Foreground="{StaticResource SecondaryTextBrush}" Text="●"
+                                   Visibility="{x:Bind ViewModel.DisconnectedIndicatorVisibility, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+                        <ProgressRing Width="16" Height="16"
+                                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" Background="{StaticResource PanelBrush}"
+                    BorderBrush="{StaticResource SubtleBorderBrush}" BorderThickness="0,0,1,0">
+                <StackPanel Padding="12,20" Spacing="4">
+                    <TextBlock Margin="12,0,0,6" Style="{StaticResource PropertyLabelTextStyle}" Text="CONTROLES" />
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsControlsActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Controls">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.ControlsVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE765;" />
+                            <TextBlock Grid.Column="2" Text="Controles" />
+                        </Grid>
+                    </ToggleButton>
+                    <TextBlock Margin="12,16,0,6" Style="{StaticResource PropertyLabelTextStyle}" Text="CONFIGURACIÓN" />
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsProfilesActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Profiles">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.ProfilesVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE716;" />
+                            <TextBlock Grid.Column="2" Text="Perfiles" />
+                        </Grid>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsDisplayActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Display">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.DisplayVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE7F4;" />
+                            <TextBlock Grid.Column="2" Text="Pantalla" />
+                        </Grid>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsActionsActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Actions">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.ActionsVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE945;" />
+                            <TextBlock Grid.Column="2" Text="Acciones" />
+                        </Grid>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsAutomationActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Automation">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.AutomationVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE895;" />
+                            <TextBlock Grid.Column="2" Text="Automatización" />
+                        </Grid>
+                    </ToggleButton>
+                    <TextBlock Margin="12,16,0,6" Style="{StaticResource PropertyLabelTextStyle}" Text="AVANZADO" />
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsVisualEditorActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="VisualEditor">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.VisualEditorVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE70F;" />
+                            <TextBlock Grid.Column="2" Text="Editor visual" />
+                        </Grid>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsMacrosActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Macros">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.MacrosVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE8FD;" />
+                            <TextBlock Grid.Column="2" Text="Macros" />
+                        </Grid>
+                    </ToggleButton>
+                    <TextBlock Margin="12,16,0,6" Style="{StaticResource PropertyLabelTextStyle}" Text="SISTEMA" />
+                    <ToggleButton Style="{StaticResource NavButtonStyle}"
+                                  IsChecked="{x:Bind ViewModel.Shell.IsDeviceActive, Mode=OneWay}"
+                                  Command="{x:Bind ViewModel.Shell.NavigateCommand}" CommandParameter="Device">
+                        <Grid ColumnSpacing="9"><Grid.ColumnDefinitions><ColumnDefinition Width="2" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BrandAccentBrush}" Visibility="{x:Bind ViewModel.Shell.DeviceVisibility, Mode=OneWay}" />
+                            <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE772;" />
+                            <TextBlock Grid.Column="2" Text="Dispositivo" />
+                        </Grid>
+                    </ToggleButton>
+                </StackPanel>
+            </Border>
+        <Grid Grid.Row="1" Grid.Column="1" Padding="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Style="{StaticResource SectionTitleTextStyle}"
+                       VerticalAlignment="Top"
+                       Text="{x:Bind ViewModel.Shell.CurrentTitle, Mode=OneWay}" />
+            <Grid Grid.Row="1">
+
+                <Grid x:Name="ProfilesWorkspaceRoot"
+                      Visibility="{x:Bind ViewModel.Shell.ProfilesVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <Border Style="{StaticResource ModuleToolbarStyle}">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Perfil activo" />
+                                <ComboBox MinWidth="210" IsEnabled="{x:Bind ViewModel.Profiles.CanInteract, Mode=OneWay}"
+                                          ItemsSource="{x:Bind ViewModel.Profiles.Profiles}"
+                                          SelectedItem="{x:Bind ViewModel.Profiles.ActiveProfile, Mode=TwoWay}" />
+                                <ProgressRing Width="16" Height="16" IsActive="{x:Bind ViewModel.Profiles.IsBusy, Mode=OneWay}" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Nuevo perfil" Command="{x:Bind ViewModel.Profiles.NewCommand}"><FontIcon Glyph="&#xE710;" /></Button>
+                            <Button Grid.Column="2" Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Renombrar perfil" Command="{x:Bind ViewModel.Profiles.RenameCommand}"><FontIcon Glyph="&#xE70F;" /></Button>
+                            <Button Grid.Column="3" Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Eliminar perfil" Command="{x:Bind ViewModel.Profiles.DeleteCommand}"><FontIcon Glyph="&#xE74D;" /></Button>
+                        </Grid>
+                    </Border>
+                    <Grid Grid.Row="1" ColumnSpacing="16" Margin="0,16,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="320" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource ModulePanelStyle}">
+                            <Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                                <TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="PERFILES" />
+                                <ListView Grid.Row="1" BorderThickness="0" Background="Transparent"
+                                          ItemsSource="{x:Bind ViewModel.Profiles.ProfileItems}"
+                                          SelectedItem="{x:Bind ViewModel.Profiles.SelectedProfileItem, Mode=TwoWay}">
+                                    <ListView.ItemTemplate><DataTemplate><Grid Padding="10,7" ColumnSpacing="10"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <StackPanel Spacing="2"><TextBlock FontWeight="SemiBold" Text="{Binding Name}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{Binding Summary}" /></StackPanel>
+                                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="{StaticResource BrandAccentBrush}" FontSize="11" FontWeight="SemiBold" Text="{Binding ActiveText}" />
+                                    </Grid></DataTemplate></ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}" Padding="20">
+                            <StackPanel Spacing="18">
+                                <StackPanel Spacing="4"><TextBlock Style="{StaticResource SubsectionTitleTextStyle}" Text="{x:Bind ViewModel.Profiles.SelectedProfileItem.Name, Mode=OneWay}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Perfil seleccionado para gestionar. Esta selección no cambia el dispositivo." /></StackPanel>
+                                <Rectangle Height="1" Fill="{StaticResource SubtleBorderBrush}" />
+                                <Grid ColumnSpacing="20"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Configuración" /><TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Profiles.SelectedProfileItem.Summary, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="20"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Estado" /><TextBlock Grid.Column="1" Foreground="{StaticResource BrandAccentBrush}" FontWeight="SemiBold" Text="{x:Bind ViewModel.Profiles.SelectedProfileItem.ActiveText, Mode=OneWay}" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.Profiles.Feedback, Mode=OneWay}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <Grid x:Name="AutomationWorkspaceRoot"
+                      Visibility="{x:Bind ViewModel.Shell.AutomationVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <Border Style="{StaticResource ModuleToolbarStyle}"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <ToggleSwitch VerticalAlignment="Center" OffContent="Cambio automático desactivado" OnContent="Cambio automático activado" IsEnabled="{x:Bind ViewModel.ProfileAutomation.CanEdit, Mode=OneWay}" IsOn="{x:Bind ViewModel.ProfileAutomation.AutoSwitchEnabled, Mode=TwoWay}" />
+                        <Button Grid.Column="1" Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Nueva regla" Command="{x:Bind ViewModel.ProfileAutomation.NewRuleCommand}"><FontIcon Glyph="&#xE710;" /></Button>
+                        <Button Grid.Column="2" Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Guardar regla" Command="{x:Bind ViewModel.ProfileAutomation.SaveRuleCommand}"><FontIcon Glyph="&#xE74E;" /></Button>
+                        <Button Grid.Column="3" Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Eliminar regla" Command="{x:Bind ViewModel.ProfileAutomation.DeleteRuleCommand}"><FontIcon Glyph="&#xE74D;" /></Button>
+                    </Grid></Border>
+                    <Grid Grid.Row="1" ColumnSpacing="16" Margin="0,16,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="3*" /></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource ModulePanelStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="REGLAS" />
+                            <Grid Grid.Row="1"><ListView BorderThickness="0" Background="Transparent" ItemsSource="{x:Bind ViewModel.ProfileAutomation.Rules}" SelectedItem="{x:Bind ViewModel.ProfileAutomation.SelectedRule, Mode=TwoWay}">
+                                <ListView.ItemTemplate><DataTemplate><Grid Padding="10,8" ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding ProcessDisplayName}" /><FontIcon Grid.Column="1" Foreground="{StaticResource SecondaryTextBrush}" Glyph="&#xE72A;" /><TextBlock Grid.Column="2" Text="{Binding ProfileName}" /><TextBlock Grid.Column="3" Foreground="{StaticResource BrandAccentBrush}" FontSize="11" Text="{Binding EnabledText}" />
+                                </Grid></DataTemplate></ListView.ItemTemplate>
+                            </ListView>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" Visibility="{x:Bind ViewModel.ProfileAutomation.RulesEmptyVisibility, Mode=OneWay}"><FontIcon FontSize="24" Foreground="{StaticResource SecondaryTextBrush}" Glyph="&#xE895;" /><TextBlock Style="{StaticResource EmptyStateTitleStyle}" Text="No hay reglas automáticas" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Crea una regla para aplicar un perfil según la aplicación activa." /></StackPanel>
+                            </Grid>
+                        </Grid></Border>
+                        <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="DETALLE DE LA REGLA" />
+                            <ScrollViewer Grid.Row="1" Padding="20" VerticalScrollBarVisibility="Auto" IsEnabled="{x:Bind ViewModel.ProfileAutomation.CanEdit, Mode=OneWay}"><StackPanel Spacing="12">
+                                <TextBox Header="Aplicación" PlaceholderText="devenv.exe" Text="{x:Bind ViewModel.ProfileAutomation.ProcessName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <ComboBox Header="Perfil de destino" ItemsSource="{x:Bind ViewModel.ProfileAutomation.AvailableProfiles}" SelectedItem="{x:Bind ViewModel.ProfileAutomation.SelectedTargetProfile, Mode=TwoWay}" />
+                                <CheckBox Content="Regla habilitada" IsChecked="{x:Bind ViewModel.ProfileAutomation.RuleEnabled, Mode=TwoWay}" />
+                            </StackPanel></ScrollViewer>
+                            <Border Grid.Row="2" Style="{StaticResource ModuleToolbarStyle}"><TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.ProfileAutomation.Feedback, Mode=OneWay}" /></Border>
+                        </Grid></Border>
+                    </Grid>
+                </Grid>
+                <Grid x:Name="DashboardWorkspaceRoot"
+                      Visibility="{x:Bind ViewModel.Shell.DisplayVisibility, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="270" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource ModulePanelStyle}" Margin="0,0,16,0">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <StackPanel Padding="20,18,20,14" Spacing="4">
+                                <TextBlock Style="{StaticResource ModuleSectionHeaderStyle}" Text="DASHBOARD" />
+                                <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Composición guiada del perfil activo" />
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" Padding="20,8,20,16" VerticalScrollBarVisibility="Auto">
+                                <StackPanel Spacing="18">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Style="{StaticResource PropertyLabelTextStyle}" Text="APARIENCIA" />
+                                        <TextBlock Style="{StaticResource SecondaryTextStyle}"
+                                                   Text="Identidad y composición guardadas por perfil." TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <ComboBox Header="Identidad visual"
+                                              ItemsSource="{x:Bind ViewModel.Dashboard.VisualIdentities}"
+                                              SelectedItem="{x:Bind ViewModel.Dashboard.SelectedVisualIdentity, Mode=TwoWay}" />
+                                    <ComboBox Header="Preset funcional"
+                                              ItemsSource="{x:Bind ViewModel.Dashboard.FunctionalPresets}"
+                                              SelectedItem="{x:Bind ViewModel.Dashboard.SelectedFunctionalPreset, Mode=TwoWay}" />
+                                    <Border Padding="10,8" CornerRadius="6"
+                                            Background="{StaticResource ElevatedBrush}">
+                                        <TextBlock Style="{StaticResource StatusTextStyle}"
+                                                   Text="{x:Bind ViewModel.Dashboard.AppearanceSummary, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
+                                    </Border>
+                                    <StackPanel Spacing="10"
+                                                Visibility="{x:Bind ViewModel.Dashboard.CompanionSectionVisibility, Mode=OneWay}">
+                                        <Rectangle Height="1" Fill="{StaticResource SubtleBorderBrush}" />
+                                        <TextBlock Style="{StaticResource PropertyLabelTextStyle}" Text="COMPANION" />
+                                        <Border Padding="12" CornerRadius="8" Background="{StaticResource ElevatedBrush}">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="72" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                <Border Width="72" Height="72" CornerRadius="8" Background="#14000000">
+                                                    <Image Source="{x:Bind ViewModel.Dashboard.CompanionPreviewImageSource, Mode=OneWay}"
+                                                           Stretch="Uniform" />
+                                                </Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                    <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.Dashboard.CompanionPackName, Mode=OneWay}" />
+                                                    <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind ViewModel.Dashboard.CompanionPackAuthor, Mode=OneWay}" />
+                                                    <TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.Dashboard.CompanionMoodText, Mode=OneWay}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <ComboBox Header="Pack"
+                                                  ItemsSource="{x:Bind ViewModel.Dashboard.InstalledCompanionPacks}"
+                                                  SelectedItem="{x:Bind ViewModel.Dashboard.SelectedCompanionPack, Mode=TwoWay}" />
+                                        <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Mood" />
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <Button Content="Neutral" Command="{x:Bind ViewModel.Dashboard.PreviewCompanionMoodCommand}" CommandParameter="Neutral" />
+                                            <Button Content="Happy" Command="{x:Bind ViewModel.Dashboard.PreviewCompanionMoodCommand}" CommandParameter="Happy" />
+                                            <Button Content="Busy" Command="{x:Bind ViewModel.Dashboard.PreviewCompanionMoodCommand}" CommandParameter="Busy" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <Button Content="Sleeping" Command="{x:Bind ViewModel.Dashboard.PreviewCompanionMoodCommand}" CommandParameter="Sleeping" />
+                                            <Button Content="Alert" Command="{x:Bind ViewModel.Dashboard.PreviewCompanionMoodCommand}" CommandParameter="Alert" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Content="Importar pack…" Command="{x:Bind ViewModel.Dashboard.ImportCompanionPackCommand}" />
+                                            <Button Content="Eliminar personalizado" Command="{x:Bind ViewModel.Dashboard.DeleteCompanionPackCommand}"
+                                                    IsEnabled="{x:Bind ViewModel.Dashboard.CanDeleteCompanionPack, Mode=OneWay}" />
+                                        </StackPanel>
+                                        <TextBlock Style="{StaticResource StatusTextStyle}"
+                                                   Text="{x:Bind ViewModel.Dashboard.CompanionStatusText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Rectangle Height="1" Fill="{StaticResource SubtleBorderBrush}" />
+                                    <TextBlock Style="{StaticResource PropertyLabelTextStyle}" Text="WIDGETS" />
+                                    <ToggleSwitch Header="Matriz de botones" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.ButtonMatrixEnabled, Mode=TwoWay}" />
+                                    <CheckBox Content="Mostrar labels" IsChecked="{x:Bind ViewModel.Dashboard.ShowLabels, Mode=TwoWay}" />
+                                    <ToggleSwitch Header="Encoder" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.EncoderEnabled, Mode=TwoWay}" />
+                                    <ToggleSwitch Header="Perfil activo" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.ProfileEnabled, Mode=TwoWay}" />
+                                    <ToggleSwitch Header="Reloj" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.ClockEnabled, Mode=TwoWay}" />
+                                    <CheckBox Content="Formato 24 horas" IsChecked="{x:Bind ViewModel.Dashboard.Use24HourClock, Mode=TwoWay}" />
+                                    <ToggleSwitch Header="Ahora suena" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.NowPlayingEnabled, Mode=TwoWay}" />
+                                    <CheckBox Content="Mostrar carátula" IsChecked="{x:Bind ViewModel.Dashboard.ShowArtwork, Mode=TwoWay}" />
+                                    <ToggleSwitch Header="Estado del sistema" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.SystemStatsEnabled, Mode=TwoWay}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8"><CheckBox Content="CPU" IsChecked="{x:Bind ViewModel.Dashboard.ShowCpu, Mode=TwoWay}" /><CheckBox Content="GPU" IsChecked="{x:Bind ViewModel.Dashboard.ShowGpu, Mode=TwoWay}" /><CheckBox Content="RAM" IsChecked="{x:Bind ViewModel.Dashboard.ShowRam, Mode=TwoWay}" /></StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="8"><CheckBox Content="Temperaturas" IsChecked="{x:Bind ViewModel.Dashboard.ShowTemperatures, Mode=TwoWay}" /><CheckBox Content="Red" IsChecked="{x:Bind ViewModel.Dashboard.ShowNetwork, Mode=TwoWay}" /><CheckBox Content="Disco" IsChecked="{x:Bind ViewModel.Dashboard.ShowDisk, Mode=TwoWay}" /></StackPanel>
+                                    <ToggleSwitch Header="Mascota" OffContent="" OnContent="" IsOn="{x:Bind ViewModel.Dashboard.MascotEnabled, Mode=TwoWay}" />
+                                    <CheckBox Content="Movimiento reducido" IsChecked="{x:Bind ViewModel.Dashboard.ReducedMascotMotion, Mode=TwoWay}" />
+                                    <CheckBox Content="Touch targets (desarrollo)" IsChecked="{x:Bind ViewModel.Dashboard.ShowTouchTargets, Mode=TwoWay}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                            <Border Grid.Row="2" Style="{StaticResource ModuleToolbarStyle}">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.Dashboard.AutosaveStatusText, Mode=OneWay}" />
+                                    <TextBlock Grid.Column="1" HorizontalAlignment="Right" Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.Dashboard.InteractionText, Mode=OneWay}" TextWrapping="Wrap" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}" Padding="24">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <Grid Margin="0,0,0,18">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel Spacing="3"><TextBlock Style="{StaticResource ModuleSectionHeaderStyle}" Text="PREVISUALIZACIÓN 480 × 320" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Vista permanente del dashboard del perfil activo" /></StackPanel>
+                                <ComboBox Grid.Column="1" Width="130" Header="Escala" ItemsSource="{x:Bind ViewModel.Dashboard.PreviewScales}" SelectedItem="{x:Bind ViewModel.Dashboard.SelectedPreviewScale, Mode=TwoWay}" />
+                            </Grid>
+                            <ScrollViewer x:Name="DashboardPreviewViewport" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SizeChanged="OnDashboardPreviewViewportSizeChanged">
+                                <Border Background="#090A0D" BorderBrush="#3B3F49" BorderThickness="1" CornerRadius="10" Padding="10">
+                                    <Viewbox Stretch="Uniform" Width="{x:Bind ViewModel.Dashboard.PreviewWidth, Mode=OneWay}" Height="{x:Bind ViewModel.Dashboard.PreviewHeight, Mode=OneWay}">
+                                        <Border x:Name="DashboardPreviewHost"
+                                                Width="{x:Bind ViewModel.DisplayConfiguration.Width}"
+                                                Height="{x:Bind ViewModel.DisplayConfiguration.Height}"
+                                                Background="#0D1016"
+                                                PointerPressed="OnDashboardPreviewPointerPressed"
+                                                PointerReleased="OnDashboardPreviewPointerReleased">
+                                            <Canvas x:Name="DashboardPreviewCanvas"
+                                                    Width="{x:Bind ViewModel.DisplayConfiguration.Width}"
+                                                    Height="{x:Bind ViewModel.DisplayConfiguration.Height}" />
+                                        </Border>
+                                    </Viewbox>
+                                </Border>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid x:Name="DisplayWorkspaceRoot" MinHeight="520"
+                      Visibility="{x:Bind ViewModel.Shell.VisualEditorVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center"
+                                   Style="{StaticResource SecondaryTextStyle}"
+                                   Text="{x:Bind ViewModel.DisplayEditor.CurrentProfileText, Mode=OneWay}" />
+                        <ToggleSwitch Grid.Column="1"
+                                      OffContent="Previsualizar"
+                                      OnContent="Editar"
+                                      IsOn="{x:Bind ViewModel.DisplayEditor.IsEditMode, Mode=TwoWay}" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" MinHeight="500"
+                          Background="#101010"
+                          BorderBrush="{StaticResource SubtleBorderBrush}"
+                          BorderThickness="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="280" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="{StaticResource PanelBrush}"
+                                BorderBrush="{StaticResource SubtleBorderBrush}"
+                                BorderThickness="0,0,1,0">
+                            <Grid Padding="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="2*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="3*" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}"
+                                               VerticalAlignment="Center" Text="PÁGINAS" />
+                                    <Button Grid.Column="1" Style="{StaticResource PanelHeaderButtonStyle}"
+                                            Content="&#xE109;" FontFamily="Segoe Fluent Icons"
+                                            ToolTipService.ToolTip="Nueva página"
+                                            Command="{x:Bind ViewModel.DisplayEditor.NewPageCommand}" />
+                                    <Button Grid.Column="2" Style="{StaticResource PanelHeaderButtonStyle}"
+                                            Content="&#xE712;" FontFamily="Segoe Fluent Icons"
+                                            ToolTipService.ToolTip="Más acciones de página">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem Text="Renombrar" Command="{x:Bind ViewModel.DisplayEditor.RenamePageCommand}" />
+                                                <MenuFlyoutItem Text="Duplicar" Command="{x:Bind ViewModel.DisplayEditor.DuplicatePageCommand}" />
+                                                <MenuFlyoutItem Text="Usar como página inicial" Command="{x:Bind ViewModel.DisplayEditor.SetDefaultPageCommand}" />
+                                                <MenuFlyoutSeparator />
+                                                <MenuFlyoutItem Text="Subir" Command="{x:Bind ViewModel.DisplayEditor.PageUpCommand}" />
+                                                <MenuFlyoutItem Text="Bajar" Command="{x:Bind ViewModel.DisplayEditor.PageDownCommand}" />
+                                                <MenuFlyoutItem Text="Deshacer cambio" Command="{x:Bind ViewModel.DisplayEditor.PageUndoCommand}" />
+                                                <MenuFlyoutItem Text="Rehacer cambio" Command="{x:Bind ViewModel.DisplayEditor.PageRedoCommand}" />
+                                                <MenuFlyoutSeparator />
+                                                <MenuFlyoutItem Text="Eliminar" Foreground="{StaticResource ErrorBrush}"
+                                                                    IsEnabled="{x:Bind ViewModel.DisplayEditor.CanDeletePage, Mode=OneWay}"
+                                                                    Command="{x:Bind ViewModel.DisplayEditor.DeletePageCommand}" />
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </Grid>
+                                <ListView Grid.Row="1" Margin="-4,0" SelectionMode="Single"
+                                          ItemsSource="{x:Bind ViewModel.DisplayEditor.Pages}"
+                                          SelectedItem="{x:Bind ViewModel.DisplayEditor.SelectedPageItem, Mode=TwoWay}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid MinHeight="34" Padding="6,3" ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2" />
+                                                    <ColumnDefinition Width="24" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Border Background="{StaticResource BrandAccentBrush}"
+                                                        Visibility="{Binding SelectionVisibility}" />
+                                                <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                                                           HorizontalAlignment="Center" FontSize="15" Text="▣" />
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock FontSize="10" Foreground="{StaticResource SecondaryTextBrush}"
+                                                               Text="Página" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="5"
+                                                            VerticalAlignment="Center">
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" FontSize="11"
+                                                              Foreground="{StaticResource SecondaryTextBrush}"
+                                                              Glyph="&#xE80F;" ToolTipService.ToolTip="Página inicial"
+                                                              Visibility="{Binding DefaultVisibility}" />
+                                                    <Ellipse Width="6" Height="6" Fill="{StaticResource SuccessBrush}"
+                                                             ToolTipService.ToolTip="Página activa"
+                                                             Visibility="{Binding ActiveVisibility}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                                <Grid Grid.Row="2" Margin="0,16,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}"
+                                               VerticalAlignment="Center" Text="CAPAS" />
+                                    <Button Grid.Column="1" Style="{StaticResource PanelHeaderButtonStyle}"
+                                            Content="&#xE712;" FontFamily="Segoe Fluent Icons"
+                                            ToolTipService.ToolTip="Orden de capas">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem Text="Subir" Command="{x:Bind ViewModel.DisplayEditor.LayerUpCommand}" />
+                                                <MenuFlyoutItem Text="Bajar" Command="{x:Bind ViewModel.DisplayEditor.LayerDownCommand}" />
+                                                <MenuFlyoutItem Text="Traer al frente" Command="{x:Bind ViewModel.DisplayEditor.BringFrontCommand}" />
+                                                <MenuFlyoutItem Text="Enviar al fondo" Command="{x:Bind ViewModel.DisplayEditor.SendBackCommand}" />
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </Grid>
+                                <ListView Grid.Row="3" Margin="-4,0" SelectionMode="Single"
+                                          ItemsSource="{x:Bind ViewModel.DisplayEditor.Layers}"
+                                          SelectedItem="{x:Bind ViewModel.DisplayEditor.SelectedLayer, Mode=TwoWay}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid MinHeight="32" Padding="6,2" ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="2" />
+                                                    <ColumnDefinition Width="18" />
+                                                    <ColumnDefinition Width="22" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Border Background="{StaticResource BrandAccentBrush}"
+                                                        Visibility="{Binding SelectionVisibility}" />
+                                                <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                                                           Foreground="{StaticResource SecondaryTextBrush}"
+                                                           Text="{Binding VisibilityGlyph}"
+                                                           ToolTipService.ToolTip="{Binding VisibilityText}" />
+                                                <TextBlock Grid.Column="2" VerticalAlignment="Center"
+                                                           FontWeight="SemiBold" Text="{Binding TypeGlyph}" />
+                                                <TextBlock Grid.Column="3" VerticalAlignment="Center"
+                                                           Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis"
+                                                           ToolTipService.ToolTip="{Binding Id}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="44" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="34" />
+                            </Grid.RowDefinitions>
+
+                            <Border Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource SubtleBorderBrush}"
+                                    BorderThickness="0,0,0,1">
+                                <Grid Padding="10,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Spacing="4"
+                                                Visibility="{x:Bind ViewModel.DisplayEditor.EditorControlsVisibility, Mode=OneWay}">
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}"
+                                                Background="{StaticResource BrandAccentSubtleBrush}"
+                                                BorderBrush="{StaticResource BrandAccentBrush}"
+                                                Content="&#xE7C9;" FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Seleccionar y mover" />
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE8D2;"
+                                                FontFamily="Segoe Fluent Icons" ToolTipService.ToolTip="Añadir texto"
+                                                Command="{x:Bind ViewModel.DisplayEditor.AddTextCommand}" />
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE7C3;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Añadir rectángulo"
+                                                Command="{x:Bind ViewModel.DisplayEditor.AddRectangleCommand}" />
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE91B;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Añadir imagen"
+                                                Command="{x:Bind ViewModel.DisplayEditor.AddImageCommand}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal" Spacing="4"
+                                                Visibility="{x:Bind ViewModel.DisplayEditor.EditorControlsVisibility, Mode=OneWay}">
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE8C8;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Duplicar elemento"
+                                                Command="{x:Bind ViewModel.DisplayEditor.DuplicateCommand}" />
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE107;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Eliminar elemento"
+                                                Command="{x:Bind ViewModel.DisplayEditor.DeleteCommand}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="10,0,0,0" Orientation="Horizontal" Spacing="4"
+                                                Visibility="{x:Bind ViewModel.DisplayEditor.EditorControlsVisibility, Mode=OneWay}">
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE10E;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Deshacer"
+                                                Command="{x:Bind ViewModel.DisplayEditor.UndoCommand}" />
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE10D;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Rehacer"
+                                                Command="{x:Bind ViewModel.DisplayEditor.RedoCommand}" />
+                                        <Button Style="{StaticResource EditorToolbarButtonStyle}" Content="&#xE105;"
+                                                FontFamily="Segoe Fluent Icons"
+                                                ToolTipService.ToolTip="Guardar ahora"
+                                                Command="{x:Bind ViewModel.DisplayEditor.SaveCommand}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="5">
+                                        <ToggleButton Style="{StaticResource EditorToolbarToggleStyle}" Content="&#xE14C;"
+                                                      FontFamily="Segoe Fluent Icons"
+                                                      ToolTipService.ToolTip="Mostrar cuadrícula"
+                                                      IsChecked="{x:Bind ViewModel.DisplayEditor.ShowGrid, Mode=TwoWay}" />
+                                        <ToggleButton Style="{StaticResource EditorToolbarToggleStyle}" Content="&#xE73A;"
+                                                      FontFamily="Segoe Fluent Icons"
+                                                      ToolTipService.ToolTip="Ajustar a cuadrícula de 5 px"
+                                                      IsChecked="{x:Bind ViewModel.DisplayEditor.SnapEnabled, Mode=TwoWay}" />
+                                        <ComboBox Width="88" Height="32" Padding="8,2"
+                                                  ToolTipService.ToolTip="Zoom de la preview"
+                                                  ItemsSource="{x:Bind ViewModel.DisplayEditor.ZoomOptions}"
+                                                  SelectedItem="{x:Bind ViewModel.DisplayEditor.SelectedZoom, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <ScrollViewer Grid.Row="1"
+                                          HorizontalScrollBarVisibility="Auto"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalContentAlignment="Stretch"
+                                          VerticalContentAlignment="Stretch">
+                                <Grid MinWidth="500" MinHeight="400" Padding="16"
+                                      Background="#101010">
+                                    <Border x:Name="PreviewHost"
+                                            Width="{x:Bind ViewModel.DisplayEditor.PreviewWidth, Mode=OneWay}"
+                                            Height="{x:Bind ViewModel.DisplayEditor.PreviewHeight, Mode=OneWay}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Background="#050505"
+                                            BorderBrush="#565656"
+                                            BorderThickness="1"
+                                            PointerPressed="OnPreviewPointerPressed"
+                                            PointerMoved="OnPreviewPointerMoved"
+                                            PointerReleased="OnPreviewPointerReleased"
+                                            PointerCanceled="OnPreviewPointerReleased">
+                                        <Viewbox Stretch="Fill">
+                                            <Canvas x:Name="DisplayPreviewCanvas"
+                                                    Width="{x:Bind ViewModel.DisplayConfiguration.Width}"
+                                                    Height="{x:Bind ViewModel.DisplayConfiguration.Height}" />
+                                        </Viewbox>
+                                    </Border>
+                                </Grid>
+                            </ScrollViewer>
+
+                            <Border Grid.Row="2" Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource SubtleBorderBrush}"
+                                    BorderThickness="0,1,0,0">
+                                <Grid Padding="10,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Spacing="5"
+                                                Visibility="{x:Bind ViewModel.DisplayEditor.PreviewControlsVisibility, Mode=OneWay}">
+                                        <Button Style="{StaticResource PanelHeaderButtonStyle}" Content="←"
+                                                ToolTipService.ToolTip="Página anterior"
+                                                Command="{x:Bind ViewModel.DisplayEditor.PreviousPageCommand}" />
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Text="{x:Bind ViewModel.DisplayEditor.PagePositionText, Mode=OneWay}" />
+                                        <Button Style="{StaticResource PanelHeaderButtonStyle}" Content="→"
+                                                ToolTipService.ToolTip="Página siguiente"
+                                                Command="{x:Bind ViewModel.DisplayEditor.NextPageCommand}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" VerticalAlignment="Center"
+                                               Foreground="{StaticResource SecondaryTextBrush}"
+                                               FontSize="11"
+                                               Text="{x:Bind ViewModel.DisplayEditor.Feedback, Mode=OneWay}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Column="2" Background="{StaticResource PanelBrush}"
+                                BorderBrush="{StaticResource SubtleBorderBrush}"
+                                BorderThickness="1,0,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Border BorderBrush="{StaticResource SubtleBorderBrush}"
+                                        BorderThickness="0,0,0,1">
+                                    <TextBlock Margin="14,0" VerticalAlignment="Center"
+                                               Style="{StaticResource SubsectionTitleTextStyle}"
+                                               Text="Propiedades" />
+                                </Border>
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Padding="14" Spacing="12">
+                                        <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}" Text="PÁGINA" />
+                                        <Grid ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="82" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Transición" />
+                                            <ComboBox Grid.Column="1" MinHeight="28"
+                                                      ItemsSource="{x:Bind ViewModel.DisplayEditor.PageTransitions}"
+                                                      SelectedItem="{x:Bind ViewModel.DisplayEditor.SelectedPageTransition, Mode=TwoWay}" />
+                                        </Grid>
+                                        <Grid ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="82" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Fondo" />
+                                            <TextBox Grid.Column="1" Style="{StaticResource CompactTextBoxStyle}"
+                                                     Text="{x:Bind ViewModel.DisplayEditor.Background, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                        </Grid>
+
+                                        <StackPanel Margin="0,24,0,0" Spacing="8"
+                                                    Visibility="{x:Bind ViewModel.DisplayEditor.EmptyInspectorVisibility, Mode=OneWay}">
+                                            <TextBlock HorizontalAlignment="Center" FontSize="22"
+                                                       Foreground="{StaticResource DisabledTextBrush}" Text="◇" />
+                                            <TextBlock HorizontalAlignment="Center"
+                                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                                       Text="Selecciona un elemento" />
+                                            <TextBlock HorizontalAlignment="Center" TextAlignment="Center"
+                                                       Foreground="{StaticResource DisabledTextBrush}"
+                                                       FontSize="11" TextWrapping="Wrap"
+                                                       Text="Sus propiedades aparecerán aquí." />
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="12"
+                                                    Visibility="{x:Bind ViewModel.DisplayEditor.InspectorVisibility, Mode=OneWay}">
+                                            <TextBlock FontWeight="SemiBold"
+                                                       Text="{x:Bind ViewModel.DisplayEditor.SelectedId, Mode=OneWay}" />
+                                            <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}" Text="TRANSFORM" />
+                                            <Grid ColumnSpacing="8" RowSpacing="6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="18" /><ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="18" /><ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="X" />
+                                                <NumberBox Grid.Column="1" Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.X, Mode=TwoWay}" />
+                                                <TextBlock Grid.Column="2" Style="{StaticResource InspectorLabelStyle}" Text="Y" />
+                                                <NumberBox Grid.Column="3" Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.Y, Mode=TwoWay}" />
+                                                <TextBlock Grid.Row="1" Style="{StaticResource InspectorLabelStyle}" Text="W" />
+                                                <NumberBox Grid.Row="1" Grid.Column="1" Minimum="10"
+                                                           Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.Width, Mode=TwoWay}" />
+                                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource InspectorLabelStyle}" Text="H" />
+                                                <NumberBox Grid.Row="1" Grid.Column="3" Minimum="10"
+                                                           Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.Height, Mode=TwoWay}" />
+                                            </Grid>
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="82" /><ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Orden Z" />
+                                                <NumberBox Grid.Column="1" Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.Z, Mode=TwoWay}" />
+                                            </Grid>
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="82" /><ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Opacidad" />
+                                                <NumberBox Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.1"
+                                                           Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.Opacity, Mode=TwoWay}" />
+                                            </Grid>
+                                            <CheckBox Content="Visible"
+                                                      IsChecked="{x:Bind ViewModel.DisplayEditor.Visible, Mode=TwoWay}" />
+
+                                            <StackPanel Spacing="8"
+                                                        Visibility="{x:Bind ViewModel.DisplayEditor.TextVisibility, Mode=OneWay}">
+                                                <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}" Text="TIPOGRAFÍA" />
+                                                <TextBox Header="Contenido" Style="{StaticResource CompactTextBoxStyle}"
+                                                         Text="{x:Bind ViewModel.DisplayEditor.Text, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="82" /><ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Tamaño" />
+                                                    <NumberBox Grid.Column="1" Minimum="1" Style="{StaticResource CompactNumberBoxStyle}"
+                                                               Value="{x:Bind ViewModel.DisplayEditor.FontSize, Mode=TwoWay}" />
+                                                </Grid>
+                                                <TextBox Header="Fuente" Style="{StaticResource CompactTextBoxStyle}"
+                                                         PlaceholderText="Segoe UI"
+                                                         Text="{x:Bind ViewModel.DisplayEditor.FontFamily, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                                <ComboBox Header="Alineación" ItemsSource="{x:Bind ViewModel.DisplayEditor.Alignments}"
+                                                          SelectedItem="{x:Bind ViewModel.DisplayEditor.Alignment, Mode=TwoWay}" />
+                                                <TextBox Header="Color" Style="{StaticResource CompactTextBoxStyle}"
+                                                         Text="{x:Bind ViewModel.DisplayEditor.TextColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                            </StackPanel>
+
+                                            <StackPanel Spacing="8"
+                                                        Visibility="{x:Bind ViewModel.DisplayEditor.RectangleVisibility, Mode=OneWay}">
+                                                <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}" Text="APARIENCIA" />
+                                                <TextBox Header="Relleno" Style="{StaticResource CompactTextBoxStyle}"
+                                                         Text="{x:Bind ViewModel.DisplayEditor.Fill, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                                <NumberBox Header="Radio de esquina" Minimum="0"
+                                                           Style="{StaticResource CompactNumberBoxStyle}"
+                                                           Value="{x:Bind ViewModel.DisplayEditor.CornerRadius, Mode=TwoWay}" />
+                                            </StackPanel>
+
+                                            <StackPanel Spacing="8"
+                                                        Visibility="{x:Bind ViewModel.DisplayEditor.ImageVisibility, Mode=OneWay}">
+                                                <TextBlock Style="{StaticResource SidebarSectionHeaderStyle}" Text="IMAGEN" />
+                                                <TextBox Header="Asset ID" Style="{StaticResource CompactTextBoxStyle}"
+                                                         Text="{x:Bind ViewModel.DisplayEditor.AssetId, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                                <ComboBox Header="Ajuste" ItemsSource="{x:Bind ViewModel.DisplayEditor.ImageStretches}"
+                                                          SelectedItem="{x:Bind ViewModel.DisplayEditor.ImageStretch, Mode=TwoWay}" />
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <Button HorizontalAlignment="Left" Margin="0,12,0,0"
+                                                Content="Simular activación"
+                                                ToolTipService.ToolTip="Previsualiza el efecto de activación del perfil"
+                                                Command="{x:Bind ViewModel.SimulateProfileVisualCommand}" />
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <Grid x:Name="MacrosWorkspaceRoot" Visibility="{x:Bind ViewModel.Shell.MacrosVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <Border Style="{StaticResource ModuleToolbarStyle}"><StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+                        <Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Nueva macro" Command="{x:Bind ViewModel.HostActions.NewMacroCommand}"><FontIcon Glyph="&#xE710;" /></Button>
+                        <Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Eliminar macro" Command="{x:Bind ViewModel.HostActions.DeleteCommand}"><FontIcon Glyph="&#xE74D;" /></Button>
+                    </StackPanel></Border>
+                    <Grid Grid.Row="1" ColumnSpacing="16" Margin="0,16,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="300" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource ModulePanelStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="MACROS" />
+                            <Grid Grid.Row="1"><ListView BorderThickness="0" Background="Transparent" ItemsSource="{x:Bind ViewModel.HostActions.Macros}" SelectedItem="{x:Bind ViewModel.HostActions.SelectedAction, Mode=TwoWay}"><ListView.ItemTemplate><DataTemplate><StackPanel Padding="10,7" Spacing="2"><TextBlock FontWeight="SemiBold" Text="{Binding Name}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{Binding Summary}" /></StackPanel></DataTemplate></ListView.ItemTemplate></ListView>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" Visibility="{x:Bind ViewModel.HostActions.MacrosEmptyVisibility, Mode=OneWay}"><FontIcon FontSize="24" Foreground="{StaticResource SecondaryTextBrush}" Glyph="&#xE8FD;" /><TextBlock Style="{StaticResource EmptyStateTitleStyle}" Text="No hay macros" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Crea una secuencia de acciones y esperas." /></StackPanel>
+                            </Grid>
+                        </Grid></Border>
+                        <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="SECUENCIA" />
+                            <TextBox Grid.Row="1" Margin="16,12" Header="Nombre" Text="{x:Bind ViewModel.HostActions.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <ListView Grid.Row="2" Margin="16,0" BorderThickness="0" ItemsSource="{x:Bind ViewModel.HostActions.MacroSteps}"><ListView.ItemTemplate><DataTemplate><Grid Padding="8" ColumnSpacing="10"><Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="70" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <Border Width="24" Height="24" CornerRadius="12" Background="{StaticResource BrandAccentSubtleBrush}"><TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding Position}" /></Border>
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}" Text="{Binding KindText}" />
+                                <ComboBox Grid.Column="2" Visibility="{Binding ActionVisibility}" ItemsSource="{Binding ActionOptions}" SelectedItem="{Binding SelectedAction, Mode=TwoWay}" />
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" Visibility="{Binding DelayVisibility}"><NumberBox Width="130" Minimum="1" Maximum="60000" SmallChange="100" SpinButtonPlacementMode="Inline" Value="{Binding DelayMilliseconds, Mode=TwoWay}" /><TextBlock VerticalAlignment="Center" Text="ms" /></StackPanel>
+                                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="2"><Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Subir paso" Command="{Binding MoveUpCommand}"><FontIcon Glyph="&#xE74A;" /></Button><Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Bajar paso" Command="{Binding MoveDownCommand}"><FontIcon Glyph="&#xE74B;" /></Button><Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Eliminar paso" Command="{Binding RemoveCommand}"><FontIcon Glyph="&#xE74D;" /></Button></StackPanel>
+                            </Grid></DataTemplate></ListView.ItemTemplate></ListView>
+                            <Border Grid.Row="3" Style="{StaticResource ModuleToolbarStyle}"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><StackPanel Orientation="Horizontal" Spacing="8"><Button Content="Añadir acción" Command="{x:Bind ViewModel.HostActions.AddActionStepCommand}" /><Button Content="Añadir espera" Command="{x:Bind ViewModel.HostActions.AddDelayStepCommand}" /></StackPanel><StackPanel Grid.Column="1" HorizontalAlignment="Right"><TextBlock Foreground="{StaticResource ErrorBrush}" Text="{x:Bind ViewModel.HostActions.ValidationMessage, Mode=OneWay}" /><TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.HostActions.Feedback, Mode=OneWay}" /></StackPanel></Grid></Border>
+                        </Grid></Border>
+                    </Grid>
+                </Grid>
+
+                <Grid x:Name="DeviceWorkspaceRoot" Visibility="{x:Bind ViewModel.Shell.DeviceVisibility, Mode=OneWay}">
+                    <Border Style="{StaticResource ModuleWorkspaceStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <Border Style="{StaticResource ModuleToolbarStyle}"><StackPanel Orientation="Horizontal" Spacing="8"><TextBlock Foreground="{StaticResource SuccessBrush}" Text="●" Visibility="{x:Bind ViewModel.ConnectedIndicatorVisibility, Mode=OneWay}" /><TextBlock Foreground="{StaticResource SecondaryTextBrush}" Text="●" Visibility="{x:Bind ViewModel.DisconnectedIndicatorVisibility, Mode=OneWay}" /><TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" /></StackPanel></Border>
+                        <Grid Grid.Row="1" Margin="24" ColumnSpacing="40"><Grid.ColumnDefinitions><ColumnDefinition Width="240" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <StackPanel Spacing="8"><Border Width="84" Height="84" HorizontalAlignment="Left" CornerRadius="12" Background="{StaticResource BrandAccentSubtleBrush}"><FontIcon HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="34" Foreground="{StaticResource BrandAccentBrush}" Glyph="&#xE772;" /></Border><TextBlock FontSize="22" FontWeight="SemiBold" Text="StreamDeck DIY" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Información comunicada por el dispositivo conectado." TextWrapping="Wrap" /><Border Margin="0,16,0,0" Padding="12" Style="{StaticResource ModulePanelStyle}"><StackPanel Spacing="8"><TextBlock FontWeight="SemiBold" Text="Actualización de firmware" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Reinicia el dispositivo como unidad RPI-RP2." TextWrapping="Wrap" /><Button HorizontalAlignment="Left" Content="Entrar en modo actualización" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}" Command="{x:Bind ViewModel.FirmwareUpdate.EnterBootloaderCommand}" /><TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.FirmwareUpdate.StatusText, Mode=OneWay}" TextWrapping="Wrap" /></StackPanel></Border></StackPanel>
+                            <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}" Padding="20"><ScrollViewer VerticalScrollBarVisibility="Auto"><Grid RowSpacing="10" ColumnSpacing="28"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Estado" /><TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="1" Style="{StaticResource SecondaryTextStyle}" Text="Firmware" /><TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.FirmwareText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="2" Style="{StaticResource SecondaryTextStyle}" Text="Protocolo" /><TextBlock Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.ProtocolText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="3" Style="{StaticResource SecondaryTextStyle}" Text="Botones" /><TextBlock Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.ButtonsText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="4" Style="{StaticResource SecondaryTextStyle}" Text="Encoder" /><TextBlock Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.EncodersText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="5" Style="{StaticResource SecondaryTextStyle}" Text="Capacidades" /><TextBlock Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.CapabilitiesText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="6" Style="{StaticResource SecondaryTextStyle}" Text="Hardware stats" /><TextBlock Grid.Row="6" Grid.Column="1" Text="{x:Bind ViewModel.Dashboard.HardwareStatsStatusText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="7" Style="{StaticResource SecondaryTextStyle}" Text="Sensor CPU" /><TextBlock Grid.Row="7" Grid.Column="1" Text="{x:Bind ViewModel.Dashboard.CpuSensorStatusText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="8" Style="{StaticResource SecondaryTextStyle}" Text="Sensor GPU" /><TextBlock Grid.Row="8" Grid.Column="1" Text="{x:Bind ViewModel.Dashboard.GpuSensorStatusText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="9" Style="{StaticResource SecondaryTextStyle}" Text="Temperaturas" /><TextBlock Grid.Row="9" Grid.Column="1" Text="{x:Bind ViewModel.Dashboard.TemperatureSensorStatusText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="10" Style="{StaticResource SecondaryTextStyle}" Text="Diagnóstico" /><TextBlock Grid.Row="10" Grid.Column="1" Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind ViewModel.Dashboard.HardwareStatsDiagnosticText, Mode=OneWay}" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="11" Margin="0,8,0,0" FontWeight="SemiBold" Text="DisplayLink" /><TextBlock Grid.Row="11" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource SecondaryTextStyle}" Text="Protocolo de pantalla" />
+                                <TextBlock Grid.Row="12" Style="{StaticResource SecondaryTextStyle}" Text="Protocolo" /><TextBlock Grid.Row="12" Grid.Column="1" Text="{x:Bind ViewModel.DisplayLinkProtocolText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="13" Style="{StaticResource SecondaryTextStyle}" Text="Backend" /><TextBlock Grid.Row="13" Grid.Column="1" Text="{x:Bind ViewModel.DisplayLinkBackendText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="14" Style="{StaticResource SecondaryTextStyle}" Text="Resolución" /><TextBlock Grid.Row="14" Grid.Column="1" Text="{x:Bind ViewModel.DisplayLinkResolutionText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="15" Style="{StaticResource SecondaryTextStyle}" Text="Generación / nodos" /><TextBlock Grid.Row="15" Grid.Column="1"><Run Text="{x:Bind ViewModel.DisplayLinkGenerationText, Mode=OneWay}" /><Run Text=" / " /><Run Text="{x:Bind ViewModel.DisplayLinkNodesText, Mode=OneWay}" /></TextBlock>
+                                <TextBlock Grid.Row="16" Style="{StaticResource SecondaryTextStyle}" Text="Assets" /><TextBlock Grid.Row="16" Grid.Column="1" Text="{x:Bind ViewModel.DisplayLinkAssetsText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="17" Style="{StaticResource SecondaryTextStyle}" Text="Host" /><TextBlock Grid.Row="17" Grid.Column="1" Text="{x:Bind ViewModel.DisplayLinkHostText, Mode=OneWay}" />
+                                <TextBlock Grid.Row="18" Style="{StaticResource SecondaryTextStyle}" Text="Último error" /><TextBlock Grid.Row="18" Grid.Column="1" Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind ViewModel.DisplayLinkErrorText, Mode=OneWay}" TextWrapping="Wrap" />
+                            </Grid></ScrollViewer></Border>
+                        </Grid>
+                        <Border Grid.Row="2" Margin="16" Padding="12,8" Background="#18E66B6B" CornerRadius="6"><TextBlock Foreground="{StaticResource ErrorBrush}" Text="{x:Bind ViewModel.ErrorText, Mode=OneWay}" TextWrapping="Wrap" /></Border>
+                    </Grid></Border>
+                </Grid>
+
+                <Grid x:Name="ControlsWorkspaceRoot" Visibility="{x:Bind ViewModel.Shell.ControlsVisibility, Mode=OneWay}">
+                    <Grid.Resources>
+                        <DataTemplate x:Key="ControlTileTemplate">
+                            <Grid>
+                                <Button Style="{StaticResource ControlTileButtonStyle}" Command="{Binding SelectCommand}" CommandParameter="{Binding}">
+                                    <Grid>
+                                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                        <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Number}" />
+                                        <FontIcon Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" Foreground="{StaticResource PrimaryTextBrush}" Glyph="{Binding IconGlyph}" />
+                                        <TextBlock Grid.Row="2" HorizontalAlignment="Center" MaxLines="2" TextAlignment="Center" TextWrapping="WrapWholeWords" TextTrimming="CharacterEllipsis" Text="{Binding Summary}" />
+                                    </Grid>
+                                </Button>
+                                <Border IsHitTestVisible="False" Background="{StaticResource BrandAccentSubtleBrush}" BorderBrush="{StaticResource BrandAccentBrush}" BorderThickness="2" CornerRadius="8" Opacity="{Binding SelectionOpacity}" />
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate x:Key="EncoderSegmentTemplate">
+                            <Grid>
+                                <Button Style="{StaticResource EncoderSegmentButtonStyle}" Command="{Binding SelectCommand}" CommandParameter="{Binding}">
+                                    <Grid ColumnSpacing="14"><Grid.ColumnDefinitions><ColumnDefinition Width="52" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe UI Symbol" FontSize="30" Foreground="{StaticResource BrandAccentBrush}" Text="{Binding ControlGlyph}" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4"><TextBlock FontWeight="SemiBold" Text="{Binding Name}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" MaxLines="1" TextTrimming="CharacterEllipsis" Text="{Binding Summary}" /></StackPanel>
+                                    </Grid>
+                                </Button>
+                                <Border IsHitTestVisible="False" Background="{StaticResource BrandAccentSubtleBrush}" BorderBrush="{StaticResource BrandAccentBrush}" BorderThickness="2" CornerRadius="6" Opacity="{Binding SelectionOpacity}" />
+                            </Grid>
+                        </DataTemplate>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="13*" />
+                        <ColumnDefinition Width="7*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Margin="0,0,16,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="3*" />
+                            <RowDefinition Height="1.35*" />
+                        </Grid.RowDefinitions>
+                        <Border Style="{StaticResource ModulePanelStyle}">
+                            <Grid>
+                                <Grid.RowDefinitions><RowDefinition Height="64" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                                <Grid Margin="18,0">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Style="{StaticResource ModuleSectionHeaderStyle}" Text="STREAM DECK" />
+                                        <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Selecciona una tecla para configurar su acción" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="0,0,12,0" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                                        <Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Página anterior" Command="{x:Bind ViewModel.PreviousPageCommand}"><FontIcon Glyph="&#xE72B;" /></Button>
+                                        <ComboBox MinWidth="130" ItemsSource="{x:Bind ViewModel.Pages}" SelectedItem="{x:Bind ViewModel.SelectedPage, Mode=TwoWay}" />
+                                        <Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Añadir página" Command="{x:Bind ViewModel.AddPageCommand}"><FontIcon Glyph="&#xE710;" /></Button>
+                                        <Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Página siguiente" Command="{x:Bind ViewModel.NextPageCommand}"><FontIcon Glyph="&#xE72A;" /></Button>
+                                    </StackPanel>
+                                    <Border Grid.Column="2" VerticalAlignment="Center" Padding="10,5" Background="{StaticResource ElevatedBrush}" CornerRadius="12">
+                                        <StackPanel Orientation="Horizontal" Spacing="7"><TextBlock Foreground="{StaticResource SuccessBrush}" Text="●" Visibility="{x:Bind ViewModel.ConnectedIndicatorVisibility, Mode=OneWay}" /><TextBlock Foreground="{StaticResource SecondaryTextBrush}" Text="●" Visibility="{x:Bind ViewModel.DisconnectedIndicatorVisibility, Mode=OneWay}" /><TextBlock FontSize="12" Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" /></StackPanel>
+                                    </Border>
+                                </Grid>
+                                <Grid Grid.Row="1" Margin="18,10,18,18" ColumnSpacing="18" RowSpacing="18">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="*" /><RowDefinition Height="*" /><RowDefinition Height="54" /></Grid.RowDefinitions>
+                                    <ContentControl Grid.Row="0" Grid.Column="0" Content="{x:Bind ViewModel.ButtonPresentations[0], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="0" Grid.Column="1" Content="{x:Bind ViewModel.ButtonPresentations[1], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="0" Grid.Column="2" Content="{x:Bind ViewModel.ButtonPresentations[2], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="1" Grid.Column="0" Content="{x:Bind ViewModel.ButtonPresentations[3], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="1" Grid.Column="1" Content="{x:Bind ViewModel.ButtonPresentations[4], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="1" Grid.Column="2" Content="{x:Bind ViewModel.ButtonPresentations[5], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="2" Grid.Column="0" Content="{x:Bind ViewModel.ButtonPresentations[6], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="2" Grid.Column="1" Content="{x:Bind ViewModel.ButtonPresentations[7], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <ContentControl Grid.Row="2" Grid.Column="2" Content="{x:Bind ViewModel.ButtonPresentations[8], Mode=OneWay}" ContentTemplate="{StaticResource ControlTileTemplate}" />
+                                    <Button Grid.Row="3" Grid.Column="0" Content="←  Anterior" Command="{x:Bind ViewModel.PreviousPageCommand}" />
+                                    <Button Grid.Row="3" Grid.Column="1" Content="⌂  Home" Command="{x:Bind ViewModel.HomePageCommand}" />
+                                    <Button Grid.Row="3" Grid.Column="2" Content="Siguiente  →" Command="{x:Bind ViewModel.NextPageCommand}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Margin="0,16,0,0" Style="{StaticResource ModulePanelStyle}" Padding="18,14" VerticalAlignment="Stretch">
+                            <StackPanel Spacing="10">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Style="{StaticResource ModuleSectionHeaderStyle}" Text="ENCODER" />
+                                    <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Tres acciones del mismo control físico" />
+                                </StackPanel>
+                                <Border Background="{StaticResource ElevatedBrush}" BorderBrush="{StaticResource SubtleBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="6">
+                                    <Grid ColumnSpacing="0">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <ContentControl Grid.Column="0" Content="{x:Bind ViewModel.EncoderPresentations[0], Mode=OneWay}" ContentTemplate="{StaticResource EncoderSegmentTemplate}" />
+                                        <Rectangle Grid.Column="1" HorizontalAlignment="Left" Width="1" Margin="0,10" Fill="{StaticResource SubtleBorderBrush}" />
+                                        <ContentControl Grid.Column="1" Content="{x:Bind ViewModel.EncoderPresentations[1], Mode=OneWay}" ContentTemplate="{StaticResource EncoderSegmentTemplate}" />
+                                        <Rectangle Grid.Column="2" HorizontalAlignment="Left" Width="1" Margin="0,10" Fill="{StaticResource SubtleBorderBrush}" />
+                                        <ContentControl Grid.Column="2" Content="{x:Bind ViewModel.EncoderPresentations[2], Mode=OneWay}" ContentTemplate="{StaticResource EncoderSegmentTemplate}" />
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="72" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <StackPanel Margin="18,0" VerticalAlignment="Center" Spacing="3"><TextBlock Style="{StaticResource ModuleSectionHeaderStyle}" Text="BINDING INSPECTOR" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Configura la acción del control seleccionado" /></StackPanel>
+                            <ScrollViewer Grid.Row="1" Padding="18" VerticalScrollBarVisibility="Auto" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}">
+                                <StackPanel Spacing="18">
+                                    <Grid ColumnSpacing="14"><Grid.ColumnDefinitions><ColumnDefinition Width="58" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <Border Width="56" Height="56" Background="{StaticResource BrandAccentSubtleBrush}" CornerRadius="8"><FontIcon HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="25" Foreground="{StaticResource BrandAccentBrush}" Glyph="{x:Bind ViewModel.SelectedControlIconGlyph, Mode=OneWay}" /></Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3"><TextBlock Style="{StaticResource SubsectionTitleTextStyle}" Text="{x:Bind ViewModel.SelectedControlText, Mode=OneWay}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind ViewModel.SelectedControlSummary, Mode=OneWay}" TextTrimming="CharacterEllipsis" /></StackPanel>
+                                    </Grid>
+                                    <Rectangle Height="1" Fill="{StaticResource SubtleBorderBrush}" />
+                                    <ComboBox Header="Tipo de acción" ItemsSource="{x:Bind ViewModel.ActionTypeOptions}" SelectedItem="{x:Bind ViewModel.SelectedActionTypeOption, Mode=TwoWay}" />
+                                    <StackPanel Spacing="5" Visibility="{x:Bind ViewModel.NoneEditorVisibility, Mode=OneWay}"><TextBlock FontWeight="SemiBold" Text="Sin asignar" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Este control no ejecutará ninguna acción." /></StackPanel>
+                                    <ComboBox Header="Tecla" Visibility="{x:Bind ViewModel.KeyEditorVisibility, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.KeyOptions}" SelectedItem="{x:Bind ViewModel.SelectedKey, Mode=TwoWay}" />
+                                    <StackPanel Spacing="7" Visibility="{x:Bind ViewModel.ModifiersEditorVisibility, Mode=OneWay}"><TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Modificadores" /><StackPanel Orientation="Horizontal" Spacing="10"><CheckBox Content="Ctrl" IsChecked="{x:Bind ViewModel.UseControl, Mode=TwoWay}" /><CheckBox Content="Shift" IsChecked="{x:Bind ViewModel.UseShift, Mode=TwoWay}" /><CheckBox Content="Alt" IsChecked="{x:Bind ViewModel.UseAlt, Mode=TwoWay}" /><CheckBox Content="Win" IsChecked="{x:Bind ViewModel.UseGui, Mode=TwoWay}" /></StackPanel></StackPanel>
+                                    <ComboBox Header="Control multimedia" Visibility="{x:Bind ViewModel.ConsumerEditorVisibility, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.ConsumerOptions}" SelectedItem="{x:Bind ViewModel.SelectedConsumer, Mode=TwoWay}" />
+                                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HostActionEditorVisibility, Mode=OneWay}"><ComboBox Header="Acción del PC" ItemsSource="{x:Bind ViewModel.BindingHostActionOptions}" SelectedItem="{x:Bind ViewModel.SelectedBindingHostActionOption, Mode=TwoWay}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind ViewModel.SelectedHostActionDetail, Mode=OneWay}" TextWrapping="Wrap" /><TextBlock Foreground="{StaticResource ErrorBrush}" Text="{x:Bind ViewModel.MissingHostActionText, Mode=OneWay}" TextWrapping="Wrap" /></StackPanel>
+                                    <TextBox Header="Etiqueta en pantalla" MaxLength="32" PlaceholderText="Automática si se deja vacía" Text="{x:Bind ViewModel.SelectedScreenLabel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Style="{StaticResource InspectorLabelStyle}" Text="Icono" />
+                                        <GridView Height="164" SelectionMode="Single" ItemsSource="{x:Bind ViewModel.IconOptions}" SelectedItem="{x:Bind ViewModel.SelectedIconOption, Mode=TwoWay}">
+                                            <GridView.ItemsPanel><ItemsPanelTemplate><ItemsWrapGrid Orientation="Horizontal" ItemWidth="92" ItemHeight="68" /></ItemsPanelTemplate></GridView.ItemsPanel>
+                                            <GridView.ItemTemplate><DataTemplate><StackPanel Width="78" HorizontalAlignment="Center" Spacing="4"><FontIcon HorizontalAlignment="Center" FontSize="22" Glyph="{Binding Glyph}" /><TextBlock HorizontalAlignment="Center" MaxLines="1" FontSize="11" TextTrimming="CharacterEllipsis" Text="{Binding Name}" /></StackPanel></DataTemplate></GridView.ItemTemplate>
+                                        </GridView>
+                                    </StackPanel>
+                                </StackPanel>
+                            </ScrollViewer>
+                            <Border Grid.Row="2" Style="{StaticResource ModuleToolbarStyle}"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center"><FontIcon FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Glyph="&#xE946;" /><TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.FeedbackText, Mode=OneWay}" /></StackPanel><StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"><Button Content="Probar" Command="{x:Bind ViewModel.TestCommand}" CommandParameter="Test" /><Button Style="{StaticResource PrimaryButtonStyle}" Content="Guardar" Command="{x:Bind ViewModel.SaveCommand}" CommandParameter="Save" /></StackPanel></Grid></Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Grid x:Name="ActionsWorkspaceRoot" Visibility="{x:Bind ViewModel.Shell.ActionsVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <Border Style="{StaticResource ModuleToolbarStyle}"><StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4"><Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Nueva acción" Command="{x:Bind ViewModel.HostActions.NewCommand}"><FontIcon Glyph="&#xE710;" /></Button><Button Style="{StaticResource ToolIconButtonStyle}" ToolTipService.ToolTip="Eliminar acción" Command="{x:Bind ViewModel.HostActions.DeleteCommand}"><FontIcon Glyph="&#xE74D;" /></Button></StackPanel></Border>
+                    <Grid Grid.Row="1" ColumnSpacing="16" Margin="0,16,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="3*" /></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource ModulePanelStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="*" /></Grid.RowDefinitions><TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="BIBLIOTECA" /><Grid Grid.Row="1"><ListView BorderThickness="0" Background="Transparent" ItemsSource="{x:Bind ViewModel.HostActions.Actions}" SelectedItem="{x:Bind ViewModel.HostActions.SelectedAction, Mode=TwoWay}"><ListView.ItemTemplate><DataTemplate><Grid Padding="10,7" ColumnSpacing="10"><Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><FontIcon Foreground="{StaticResource BrandAccentBrush}" Glyph="&#xE945;" /><StackPanel Grid.Column="1" Spacing="2"><TextBlock FontWeight="SemiBold" Text="{Binding Name}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{Binding KindDisplayName}" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" /></StackPanel></Grid></DataTemplate></ListView.ItemTemplate></ListView><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" Visibility="{x:Bind ViewModel.HostActions.ActionsEmptyVisibility, Mode=OneWay}"><FontIcon FontSize="24" Foreground="{StaticResource SecondaryTextBrush}" Glyph="&#xE945;" /><TextBlock Style="{StaticResource EmptyStateTitleStyle}" Text="No hay acciones" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="Crea una acción para usarla desde tus controles." /></StackPanel></Grid></Grid></Border>
+                        <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}"><Grid><Grid.RowDefinitions><RowDefinition Height="44" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions><TextBlock Margin="16,0" VerticalAlignment="Center" Style="{StaticResource ModuleSectionHeaderStyle}" Text="DETALLE DE LA ACCIÓN" /><ScrollViewer Grid.Row="1" Padding="20" VerticalScrollBarVisibility="Auto"><StackPanel Spacing="12">
+                            <TextBox Header="Nombre" Text="{x:Bind ViewModel.HostActions.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" /><ComboBox Header="Tipo" ItemsSource="{x:Bind ViewModel.HostActions.KindOptions}" SelectedItem="{x:Bind ViewModel.HostActions.SelectedKindOption, Mode=TwoWay}" />
+                            <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HostActions.TargetEditorVisibility, Mode=OneWay}"><TextBlock Style="{StaticResource InspectorLabelStyle}" Text="{x:Bind ViewModel.HostActions.TargetLabel, Mode=OneWay}" /><Grid ColumnSpacing="8"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><TextBox Text="{x:Bind ViewModel.HostActions.Target, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" /><Button Grid.Column="1" ToolTipService.ToolTip="Examinar" Visibility="{x:Bind ViewModel.HostActions.ApplicationEditorVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.HostActions.BrowseCommand}"><FontIcon Glyph="&#xE8B7;" /></Button></Grid></StackPanel>
+                            <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HostActions.AudioEditorVisibility, Mode=OneWay}"><ComboBox Header="{x:Bind ViewModel.HostActions.PrimaryAudioLabel, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.HostActions.AudioDevices}" SelectedItem="{x:Bind ViewModel.HostActions.SelectedPrimaryAudioDevice, Mode=TwoWay}" /><StackPanel Visibility="{x:Bind ViewModel.HostActions.SecondaryAudioVisibility, Mode=OneWay}"><ComboBox Header="Dispositivo B" ItemsSource="{x:Bind ViewModel.HostActions.AudioDevices}" SelectedItem="{x:Bind ViewModel.HostActions.SelectedSecondaryAudioDevice, Mode=TwoWay}" /></StackPanel><Button HorizontalAlignment="Left" Content="Actualizar dispositivos" Command="{x:Bind ViewModel.HostActions.RefreshAudioDevicesCommand}" /></StackPanel>
+                            <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.HostActions.MacroEditorVisibility, Mode=OneWay}"><FontIcon HorizontalAlignment="Left" Foreground="{StaticResource SecondaryTextBrush}" Glyph="&#xE8FD;" /><TextBlock FontWeight="SemiBold" Text="Edita esta secuencia en el módulo Macros" /><TextBlock Style="{StaticResource SecondaryTextStyle}" Text="La semántica de macros se mantiene sin cambios." /></StackPanel>
+                        </StackPanel></ScrollViewer><Border Grid.Row="2" Style="{StaticResource ModuleToolbarStyle}"><StackPanel Spacing="3"><TextBlock Foreground="{StaticResource ErrorBrush}" Text="{x:Bind ViewModel.HostActions.ValidationMessage, Mode=OneWay}" TextWrapping="Wrap" /><TextBlock Style="{StaticResource StatusTextStyle}" Text="{x:Bind ViewModel.HostActions.Feedback, Mode=OneWay}" /></StackPanel></Border></Grid></Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "official-hikari",
+  "name": "Official Hikari",
+  "author": "StreamDeck DIY",
+  "version": "1.0.0",
+  "spriteWidth": 64,
+  "spriteHeight": 64,
+  "states": {
+    "neutral": "neutral.png",
+    "happy": "happy.png",
+    "busy": "busy.png",
+    "sleeping": "sleeping.png",
+    "alert": "alert.png"
+  },
+  "metadata": {
+    "tier": "basic",
+    "license": "project-official"
+  }
+}
