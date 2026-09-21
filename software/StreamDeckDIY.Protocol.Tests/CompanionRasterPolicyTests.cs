@@ -117,9 +117,10 @@ internal static class CompanionRasterPolicyTests
     private static void LatestCompanionRequestWins()
     {
         var requests=new CompanionRequestCoordinator();
-        Assert(requests.TryBegin("Hikari:Happy",out var hikari)&&
-               requests.TryBegin("Neon:Happy",out var neon)&&
-               !requests.IsCurrent(hikari)&&requests.IsCurrent(neon),
+        var beganHikari = requests.TryBegin("Hikari:Happy", out var hikari);
+        var beganNeon = requests.TryBegin("Neon:Happy", out var neon);
+        Assert(beganHikari && beganNeon &&
+               !requests.IsCurrent(hikari) && requests.IsCurrent(neon),
             "A later theme request makes an earlier asynchronous result stale");
         requests.Complete(hikari);
         Assert(requests.IsCurrent(neon),
