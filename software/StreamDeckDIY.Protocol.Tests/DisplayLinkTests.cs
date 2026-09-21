@@ -108,7 +108,7 @@ internal static class DisplayLinkTests
     {
         var solutionRoot=Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
             "..","..","..",".."));
-        var header=Path.Combine(solutionRoot,"..","StreamDeck_Firmware",
+        var header=Path.Combine(solutionRoot,"..","firmware",
             "src","display","display_icon_catalog.hpp");
         Assert(File.Exists(header),"Firmware icon catalog source is available to the contract test");
         var firmware=Regex.Matches(File.ReadAllText(header),
