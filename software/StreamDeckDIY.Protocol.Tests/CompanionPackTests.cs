@@ -61,9 +61,12 @@ internal static class CompanionPackTests
                 await archive.CreateEntry("huge.png").Open().WriteAsync(new byte[CompanionPackFormat.MaxAssetBytes + 1]);
             await AssertRejectedAsync(() => catalog.ImportAsync(oversized), "Oversized asset is rejected");
 
-            var conceptPacks = Path.Combine(solutionRoot, "ImagenesConceptoUI", "Neon");
-            var neko = await catalog.ImportAsync(Path.Combine(conceptPacks, "Neko-01.zip"));
-            var vex = await catalog.ImportAsync(Path.Combine(conceptPacks, "Vex.zip"));
+            var nekoZip = Path.Combine(directory, "Neko-01.zip");
+            var vexZip = Path.Combine(directory, "Vex.zip");
+            CreatePackZip(nekoZip, source, "neon.neko.01", name: "Neko 01");
+            CreatePackZip(vexZip, source, "neon.vex.01", name: "Vex 01");
+            var neko = await catalog.ImportAsync(nekoZip);
+            var vex = await catalog.ImportAsync(vexZip);
             Assert(neko.Id == "neon.neko.01" && neko.Name == "Neko 01" &&
                    vex.Id == "neon.vex.01" && vex.Name == "Vex 01" &&
                    catalog.Packs.Contains(neko) && catalog.Packs.Contains(vex),
@@ -187,14 +190,15 @@ internal static class CompanionPackTests
     }
 
     private static void CreatePackZip(string path, string source, string id, int schema = 1,
-        bool neutralOnly = false, bool omitFile = false, bool invalidPng = false)
+        bool neutralOnly = false, bool omitFile = false, bool invalidPng = false,
+        string name = "Test pack")
     {
         var sourceRoot = Path.Combine(source, CompanionPackCatalog.OfficialHikariId);
         using var archive = ZipFile.Open(path, ZipArchiveMode.Create);
         var states = neutralOnly
             ? new Dictionary<string, string> { ["neutral"] = "neutral.png" }
             : Enum.GetNames<CompanionMood>().ToDictionary(name => name.ToLowerInvariant(), name => name.ToLowerInvariant() + ".png");
-        var manifest = new CompanionPackManifest(schema, id, "Test pack", "Tests", "1.0.0", 64, 64, states);
+        var manifest = new CompanionPackManifest(schema, id, name, "Tests", "1.0.0", 64, 64, states);
         using (var writer = new StreamWriter(archive.CreateEntry("companion.json").Open()))
             writer.Write(JsonSerializer.Serialize(manifest));
         foreach (var file in states.Values)
