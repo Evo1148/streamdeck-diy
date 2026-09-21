@@ -565,7 +565,7 @@ public sealed class DashboardViewModel : ObservableObject, IAsyncDisposable
             NotifyRender();
         }
     }
-`r`n
+
     private async Task RefreshCompanionAssetAsync(CompanionMood mood, CancellationToken token = default)
     {
         var identity = SelectedVisualIdentity;
