@@ -574,11 +574,8 @@ public sealed class DashboardViewModel : ObservableObject, IAsyncDisposable
             identity, configuration.EffectiveVisualOptions);
         var requestKey = CompanionRasterPolicy.RequestKey(
             packId, identity, mood, background);
-        if (requestKey == appliedCompanionRequestKey ||
-            requestKey == processingCompanionRequestKey) return;
+        if (!companionRequests.TryBegin(requestKey, out var request)) return;
 
-        var requestVersion = Interlocked.Increment(ref companionRequestVersion);
-        processingCompanionRequestKey = requestKey;
         System.Diagnostics.Debug.WriteLine(
             $"COMPANION RESOLVE request={request.Version} key={requestKey}");
         try
@@ -601,8 +598,8 @@ public sealed class DashboardViewModel : ObservableObject, IAsyncDisposable
 
             companionAsset = prepared;
             resolvedCompanionKey = prepared?.ContentKey;
-            appliedCompanionRequestKey = requestKey;
             CompanionPreviewImageSource = preview;
+            companionRequests.Complete(request);
             OnPropertyChanged(nameof(CompanionMoodText));
             CompanionStatusText = prepared is null
                 ? "No hay sprite válido; se usa el placeholder seguro."
