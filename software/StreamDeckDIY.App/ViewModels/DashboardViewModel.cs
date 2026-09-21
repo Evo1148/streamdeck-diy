@@ -652,7 +652,15 @@ public sealed class DashboardViewModel : ObservableObject, IAsyncDisposable
         var selected = SelectedCompanionPack;
         if (selected is null || selected.IsOfficial) return;
         if (!await companionInteraction.ConfirmDeleteAsync(selected.Name)) return;
-        await companionPacks.DeleteAsync(selected.Id);
+        try
+        {
+            await companionPacks.DeleteAsync(selected.Id);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            CompanionStatusText = $"No se pudo eliminar el pack: {exception.Message}";
+            return;
+        }
         configuration = configuration with { CompanionPackId = null };
         QueueSave(); RefreshCompanionPackList();
         await RefreshCompanionSelectionAsync();
